@@ -1,0 +1,18 @@
+{
+  "name": "faxcore-api-samples",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "FaxCore REST API JavaScript samples",
+  "scripts": {
+    "auth:token": "node auth/request-token.mjs",
+    "user:upload:file": "node user/upload/upload-file.mjs",
+    "user:message:list": "node user/message/list-messages.mjs",
+    "user:message:send": "node user/message/send-message.mjs",
+    "admin:domain:list": "node administration/domain/list-domains.mjs",
+    "admin:user:list": "node administration/user/list-users.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
