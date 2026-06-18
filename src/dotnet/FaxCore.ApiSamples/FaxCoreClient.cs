@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -47,13 +48,29 @@ namespace FaxCore.ApiSamples
             return SendAsync(HttpMethod.Delete, path, body);
         }
 
-        public async Task<string> UploadFileAsync(string path, string formFieldName, string filePath)
+        public Task<string> SendJsonAsync(string method, string path, string json)
+        {
+            return SendRawAsync(new HttpMethod(method), path, json);
+        }
+
+        public async Task<string> UploadFileAsync(string path, string formFieldName, string filePath, string contentType)
         {
             using (var form = new MultipartFormDataContent())
             using (var fileContent = new StreamContent(System.IO.File.OpenRead(filePath)))
             {
-                fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                form.Add(fileContent, formFieldName, System.IO.Path.GetFileName(filePath));
+                var uploadContentType = string.IsNullOrWhiteSpace(contentType) ? GuessContentType(filePath) : contentType;
+                if (!string.IsNullOrWhiteSpace(uploadContentType))
+                {
+                    fileContent.Headers.ContentType = new MediaTypeHeaderValue(uploadContentType);
+                }
+
+                fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+                {
+                    Name = QuoteHeaderValue(formFieldName ?? string.Empty),
+                    FileName = QuoteHeaderValue(System.IO.Path.GetFileName(filePath))
+                };
+
+                form.Add(fileContent);
 
                 var request = new HttpRequestMessage(HttpMethod.Post, path);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetAccessTokenAsync().ConfigureAwait(false));
@@ -70,18 +87,24 @@ namespace FaxCore.ApiSamples
                         responseText));
                 }
 
+                ThrowIfApplicationError("Upload", responseText);
                 return PrettyJson(responseText);
             }
         }
 
         private async Task<string> SendAsync(HttpMethod method, string path, object body)
         {
+            var json = body == null ? null : serializer.Serialize(body);
+            return await SendRawAsync(method, path, json).ConfigureAwait(false);
+        }
+
+        private async Task<string> SendRawAsync(HttpMethod method, string path, string json)
+        {
             var request = new HttpRequestMessage(method, path);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetAccessTokenAsync().ConfigureAwait(false));
 
-            if (body != null)
+            if (!string.IsNullOrWhiteSpace(json))
             {
-                var json = serializer.Serialize(body);
                 request.Content = new StringContent(json, Encoding.UTF8, "application/json");
             }
 
@@ -151,6 +174,70 @@ namespace FaxCore.ApiSamples
             {
                 return text;
             }
+        }
+
+        private void ThrowIfApplicationError(string operationName, string responseText)
+        {
+            try
+            {
+                var value = serializer.DeserializeObject(responseText) as IDictionary;
+                if (value == null || !value.Contains("status"))
+                {
+                    return;
+                }
+
+                var status = value["status"] as string;
+                if (string.IsNullOrWhiteSpace(status) || status.Equals("Success", StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+
+                var message = value.Contains("message") ? value["message"] as string : null;
+                throw new InvalidOperationException(operationName + " failed: " + (string.IsNullOrWhiteSpace(message) ? responseText : message));
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
+            catch
+            {
+            }
+        }
+
+        private static string GuessContentType(string filePath)
+        {
+            var extension = System.IO.Path.GetExtension(filePath);
+            if (extension == null)
+            {
+                return string.Empty;
+            }
+
+            switch (extension.ToLowerInvariant())
+            {
+                case ".pdf":
+                    return "application/pdf";
+                case ".tif":
+                case ".tiff":
+                    return "image/tiff";
+                case ".png":
+                    return "image/png";
+                case ".jpg":
+                case ".jpeg":
+                    return "image/jpeg";
+                case ".txt":
+                    return "text/plain";
+                case ".doc":
+                    return "application/msword";
+                case ".docx":
+                    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                default:
+                    return string.Empty;
+            }
+        }
+
+        private static string QuoteHeaderValue(string value)
+        {
+            return "\"" + (value ?? string.Empty).Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
         }
 
         public void Dispose()

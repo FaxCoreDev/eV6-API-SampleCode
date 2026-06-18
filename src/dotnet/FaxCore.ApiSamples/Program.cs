@@ -48,13 +48,36 @@ namespace FaxCore.ApiSamples
             Console.WriteLine("  user.upload.file");
             Console.WriteLine("  user.message.list");
             Console.WriteLine("  user.message.send");
+            Console.WriteLine("  user.message.delegate");
+            Console.WriteLine("  user.message.delete");
+            Console.WriteLine("  user.message.trash.delete");
+            Console.WriteLine("  user.message.forward");
             Console.WriteLine("  user.message.status");
+            Console.WriteLine("  user.message.read_state");
+            Console.WriteLine("  user.message.delete_state");
+            Console.WriteLine("  user.message.image");
+            Console.WriteLine("  user.message.subject.update");
+            Console.WriteLine("  user.message.tracking.get");
+            Console.WriteLine("  user.message.tracking.update");
             Console.WriteLine("  user.contact.list");
+            Console.WriteLine("  user.contact.get");
+            Console.WriteLine("  user.contact.create");
+            Console.WriteLine("  user.contact.update");
+            Console.WriteLine("  user.contact.delete");
+            Console.WriteLine("  user.addressbook.list");
+            Console.WriteLine("  user.addressbook.create");
+            Console.WriteLine("  user.addressbook.update");
+            Console.WriteLine("  user.addressbook.delete");
             Console.WriteLine("  admin.domain.list");
+            Console.WriteLine("  admin.domain.create");
+            Console.WriteLine("  admin.user.profile.update");
             Console.WriteLine("  admin.user.list");
             Console.WriteLine("  admin.route.search");
+            Console.WriteLine("  endpoint.<generated-sample-name>");
             Console.WriteLine();
             Console.WriteLine("Set FaxCoreClientId and FaxCoreClientSecret in App.config or use FAXCORE_CLIENT_ID and FAXCORE_CLIENT_SECRET.");
+            Console.WriteLine("See docs/ENDPOINT_COVERAGE.md for generated endpoint sample names.");
+            Console.ReadLine();
         }
     }
 }

@@ -1,4 +1,4 @@
-const DEFAULT_BASE_URL = 'https://123.faxcoreasia.com';
+const DEFAULT_BASE_URL = 'https://your-faxcore-server.example.com';
 
 export class FaxCoreClient {
   constructor({

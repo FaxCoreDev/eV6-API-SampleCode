@@ -1,4 +1,4 @@
-﻿{
+{
     "swagger":  "2.0",
     "info":  {
                  "version":  "v1",
@@ -14,7 +14,7 @@
                                  "url":  "https://www.faxcore.com"
                              }
              },
-    "host":  "123.faxcoreasia.com",
+    "host":  "your-faxcore-server.example.com",
     "schemes":  [
                     "https"
                 ],
@@ -555,7 +555,7 @@
                                                          "tags":  [
                                                                       "PubApi"
                                                                   ],
-                                                         "summary":  "Retrieve authenticated userâ€™s details.",
+                                                         "summary":  "Retrieve authenticated user’s details.",
                                                          "operationId":  "PubApi_GetUserDetailsByUserName",
                                                          "consumes":  [
                                                                           "application/json",
@@ -596,7 +596,7 @@
                                                             "tags":  [
                                                                          "PubApi"
                                                                      ],
-                                                            "summary":  "Retrieve specific userâ€™s fax settings.",
+                                                            "summary":  "Retrieve specific user’s fax settings.",
                                                             "operationId":  "PubApi_GetUserFaxSetting",
                                                             "consumes":  [
                                                                              "application/json",
@@ -678,7 +678,7 @@
                                                         "tags":  [
                                                                      "PubApi"
                                                                  ],
-                                                        "summary":  "Retrieve authenticated userâ€™s details.",
+                                                        "summary":  "Retrieve authenticated user’s details.",
                                                         "operationId":  "PubApi_SearchUsers",
                                                         "consumes":  [
                                                                          "application/json",

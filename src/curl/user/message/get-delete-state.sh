@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${FAXCORE_BASE_URL:=https://your-faxcore-server.example.com}"
+: "${FAXCORE_MESSAGE_ID:?Set FAXCORE_MESSAGE_ID first.}"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../../common/oauth-token.sh"
+ACCESS_TOKEN="$(get_faxcore_access_token)"
+
+curl --fail-with-body --silent --show-error \
+  --request POST \
+  --url "${FAXCORE_BASE_URL}/api/message/delete_state" \
+  --header "Authorization: Bearer ${ACCESS_TOKEN}" \
+  --header "Accept: application/json" \
+  --header "Content-Type: application/json" \
+  --data '{"messageID":"'"${FAXCORE_MESSAGE_ID}"'"}'
+

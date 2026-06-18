@@ -18,7 +18,7 @@ namespace FaxCore.ApiSamples.Samples.User.Upload
                 throw new FileNotFoundException("Upload file was not found.", config.UploadFile);
             }
 
-            return client.UploadFileAsync("/api/upload", config.UploadField, config.UploadFile);
+            return client.UploadFileAsync("/api/upload", config.UploadField, config.UploadFile, config.UploadContentType);
         }
     }
 }

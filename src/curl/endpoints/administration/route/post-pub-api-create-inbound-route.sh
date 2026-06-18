@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${FAXCORE_BASE_URL:=https://your-faxcore-server.example.com}"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../../../common/oauth-token.sh"
+if [ "${FAXCORE_CONFIRM_DESTRUCTIVE:-}" != "true" ]; then
+  echo "This sample changes or deletes data. Set FAXCORE_CONFIRM_DESTRUCTIVE=true to run it." >&2
+  exit 1
+fi
+ACCESS_TOKEN="$(get_faxcore_access_token)"
+
+curl --fail-with-body --silent --show-error \
+  --request POST \
+  --url "${FAXCORE_BASE_URL}/api/route/inbound" \
+  --header "Authorization: Bearer ${ACCESS_TOKEN}" \
+  --header "Accept: application/json" \
+  --header "Content-Type: application/json" \
+  --data @- <<'JSON'
+{
+    "forwardedUserName":  "sample.user",
+    "condition1":  "sample-value",
+    "conditionExp1":  "sample-value",
+    "isAndOperator":  true,
+    "condition2":  "sample-value",
+    "conditionExp2":  "sample-value",
+    "isActive":  true,
+    "priority":  1
+}
+JSON

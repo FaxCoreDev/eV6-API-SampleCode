@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 namespace FaxCore.ApiSamples.Samples.User.Message
@@ -8,7 +9,11 @@ namespace FaxCore.ApiSamples.Samples.User.Message
         {
             var request = new
             {
-                folderName = "Inbox",
+                folderName = Environment.GetEnvironmentVariable("FAXCORE_FOLDER") ?? "inbox",
+                startDate = Environment.GetEnvironmentVariable("FAXCORE_START_DATE") ?? "20000101",
+                endDate = Environment.GetEnvironmentVariable("FAXCORE_END_DATE") ?? "20991231",
+                isRead = Environment.GetEnvironmentVariable("FAXCORE_IS_READ") ?? "all",
+                isDownloaded = Environment.GetEnvironmentVariable("FAXCORE_IS_DOWNLOADED") ?? "all",
                 sortDescending = true,
                 pagination = new
                 {
@@ -21,4 +26,3 @@ namespace FaxCore.ApiSamples.Samples.User.Message
         }
     }
 }
-

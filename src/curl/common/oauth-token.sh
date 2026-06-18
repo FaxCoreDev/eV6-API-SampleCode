@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-: "${FAXCORE_BASE_URL:=https://123.faxcoreasia.com}"
+: "${FAXCORE_BASE_URL:=https://your-faxcore-server.example.com}"
 
 get_faxcore_access_token() {
   if [ -n "${FAXCORE_ACCESS_TOKEN:-}" ]; then

@@ -1,4 +1,4 @@
-const baseUrl = (process.env.FAXCORE_BASE_URL || 'https://123.faxcoreasia.com').replace(/\/+$/, '');
+const baseUrl = (process.env.FAXCORE_BASE_URL || 'https://your-faxcore-server.example.com').replace(/\/+$/, '');
 const clientId = process.env.FAXCORE_CLIENT_ID;
 const clientSecret = process.env.FAXCORE_CLIENT_SECRET;
 

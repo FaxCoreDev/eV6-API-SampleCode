@@ -6,7 +6,7 @@ Request an access token:
 
 ```http
 POST /oauth/token HTTP/1.1
-Host: 123.faxcoreasia.com
+Host: your-faxcore-server.example.com
 Content-Type: application/x-www-form-urlencoded
 
 client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&grant_type=client_credentials
@@ -23,7 +23,7 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 ## Environment Variables
 
 ```bash
-export FAXCORE_BASE_URL="https://123.faxcoreasia.com"
+export FAXCORE_BASE_URL="https://your-faxcore-server.example.com"
 export FAXCORE_CLIENT_ID="your-client-id"
 export FAXCORE_CLIENT_SECRET="your-client-secret"
 ```
@@ -31,7 +31,7 @@ export FAXCORE_CLIENT_SECRET="your-client-secret"
 PowerShell:
 
 ```powershell
-$env:FAXCORE_BASE_URL = "https://123.faxcoreasia.com"
+$env:FAXCORE_BASE_URL = "https://your-faxcore-server.example.com"
 $env:FAXCORE_CLIENT_ID = "your-client-id"
 $env:FAXCORE_CLIENT_SECRET = "your-client-secret"
 ```
@@ -53,3 +53,4 @@ Content-Type: application/json
 - Do not commit client credentials, access tokens, or real customer data.
 - Prefer test users, test domains, and non-production fax numbers when learning the API.
 - Administrative calls are subject to FaxCore role and domain segregation.
+- State-changing or destructive samples require `FAXCORE_CONFIRM_DESTRUCTIVE=true`.

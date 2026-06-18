@@ -1,0 +1,114 @@
+using System;
+using System.Collections;
+using System.IO;
+using System.Threading.Tasks;
+using System.Web.Script.Serialization;
+
+namespace FaxCore.ApiSamples.Samples.User.Message
+{
+    internal static class DelegateMessage
+    {
+        public static async Task<string> RunAsync(FaxCoreClient client, SampleConfig config)
+        {
+            if (!string.Equals(Environment.GetEnvironmentVariable("FAXCORE_CONFIRM_DESTRUCTIVE"), "true", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("Set FAXCORE_CONFIRM_DESTRUCTIVE=true to delegate a message.");
+            }
+
+            if (string.IsNullOrWhiteSpace(config.DelegateUsername) || string.IsNullOrWhiteSpace(config.UploadFile))
+            {
+                throw new InvalidOperationException("Set FAXCORE_DELEGATE_USERNAME and FAXCORE_UPLOAD_FILE before running user.message.delegate.");
+            }
+
+            if (!File.Exists(config.UploadFile))
+            {
+                throw new FileNotFoundException("Upload file was not found.", config.UploadFile);
+            }
+
+            var uploadResponse = await client.UploadFileAsync("/api/upload", config.UploadField, config.UploadFile, config.UploadContentType).ConfigureAwait(false);
+            var document = ExtractUploadedDocument(uploadResponse);
+            var agents = BuildAgents(config);
+
+            var request = new
+            {
+                message = new
+                {
+                    username = config.DelegateUsername,
+                    recipients = new[]
+                    {
+                        new
+                        {
+                            name = "Sample Recipient",
+                            address = "+15551234567",
+                            rawFax = true,
+                            notifyAddress = "+15551234567",
+                            company = "Example Company"
+                        }
+                    },
+                    senderName = "FaxCore API Sample",
+                    senderCompName = "Example Company",
+                    subject = "FaxCore delegated sample fax",
+                    note = "Sent from the .NET Framework delegate sample.",
+                    billingCode = "Sample",
+                    scheduleDate = DateTime.Today.ToString("yyyy-MM-dd"),
+                    priority = 60,
+                    isOnHold = false,
+                    mss = false,
+                    msf = false,
+                    trackings = new[]
+                    {
+                        new { label = "Sample", value = ".NET Framework" }
+                    },
+                    documents = new[] { document },
+                    agents = agents
+                }
+            };
+
+            var sendResponse = await client.PostAsync("/api/message/delegate", request).ConfigureAwait(false);
+            return "Upload response: " + uploadResponse + Environment.NewLine + "Delegate response: " + sendResponse;
+        }
+
+        private static object[] BuildAgents(SampleConfig config)
+        {
+            if (string.IsNullOrWhiteSpace(config.AgentID) ||
+                string.IsNullOrWhiteSpace(config.AgentType) ||
+                string.IsNullOrWhiteSpace(config.AgentValue))
+            {
+                return new object[0];
+            }
+
+            return new object[]
+            {
+                new
+                {
+                    id = config.AgentID,
+                    type = config.AgentType,
+                    value = config.AgentValue
+                }
+            };
+        }
+
+        private static object ExtractUploadedDocument(string uploadResponse)
+        {
+            var serializer = new JavaScriptSerializer();
+            var root = serializer.DeserializeObject(uploadResponse) as IDictionary;
+            var data = root != null && root.Contains("data") ? root["data"] as IEnumerable : null;
+
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    var file = item as IDictionary;
+                    var id = file != null && file.Contains("id") ? file["id"] as string : null;
+                    var fileName = file != null && file.Contains("fileName") ? file["fileName"] as string : null;
+                    if (!string.IsNullOrWhiteSpace(id) && !string.IsNullOrWhiteSpace(fileName))
+                    {
+                        return new { name = id, path = fileName, isMerge = false };
+                    }
+                }
+            }
+
+            throw new InvalidOperationException("Upload response did not include data[0].id and data[0].fileName: " + uploadResponse);
+        }
+    }
+}

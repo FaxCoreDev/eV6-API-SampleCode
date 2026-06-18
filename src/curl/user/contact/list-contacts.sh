@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${FAXCORE_BASE_URL:=https://123.faxcoreasia.com}"
+: "${FAXCORE_BASE_URL:=https://your-faxcore-server.example.com}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../../common/oauth-token.sh"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${FAXCORE_BASE_URL:=https://123.faxcoreasia.com}"
+: "${FAXCORE_BASE_URL:=https://your-faxcore-server.example.com}"
 : "${FAXCORE_CLIENT_ID:?Set FAXCORE_CLIENT_ID first.}"
 : "${FAXCORE_CLIENT_SECRET:?Set FAXCORE_CLIENT_SECRET first.}"
 
